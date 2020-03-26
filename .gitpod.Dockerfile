@@ -37,6 +37,7 @@ RUN rm -rf /home/gitpod/go && \
     GO111MODULE=on go get -u -v \
         golang.org/x/tools/gopls@latest && \
     go get -u -v -d github.com/stamblerre/gocode && \
+    go get github.com/spf13/cobra/cobra && \
     go build -o $GOPATH/bin/gocode-gomod github.com/stamblerre/gocode && \
     rm -rf $GOPATH/src && \
     sudo rm -rf $GOPATH/pkg && \
