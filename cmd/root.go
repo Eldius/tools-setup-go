@@ -17,8 +17,9 @@ package cmd
 
 import (
 	"fmt"
-	"github.com/spf13/cobra"
 	"os"
+
+	"github.com/spf13/cobra"
 
 	homedir "github.com/mitchellh/go-homedir"
 	"github.com/spf13/viper"
@@ -30,7 +31,7 @@ var cfgFile string
 var rootCmd = &cobra.Command{
 	Use:   "tools-setup-go",
 	Short: "A tool to install another tools",
-	Long: `A tool to install another tools`,
+	Long:  `A tool to install another tools`,
 	// Uncomment the following line if your bare application
 	// has an action associated with it:
 	//	Run: func(cmd *cobra.Command, args []string) { },
@@ -53,10 +54,11 @@ func init() {
 	// will be global for your application.
 
 	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "c", "config file (default is $HOME/.tools-setup-go.yaml)")
-
+	rootCmd.PersistentFlags().BoolP("verbose", "v", false, "Run in verbose mode")
+	viper.BindPFlag("verbose", rootCmd.PersistentFlags().Lookup("verbose"))
 	// Cobra also supports local flags, which will only run
 	// when this action is called directly.
-	rootCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+	//rootCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 }
 
 // initConfig reads in config file and ENV variables if set.
@@ -75,10 +77,10 @@ func initConfig() {
 		// Search config in home directory with name ".tools-setup-go" (without extension).
 		viper.AddConfigPath(home)
 		viper.SetConfigName(".tools-setup-go")
-		viper.SetConfigName("config") // name of config file (without extension)
-		viper.SetConfigType("yml") // REQUIRED if the config file does not have the extension in the name
-		viper.AddConfigPath("/etc/appname/")   // path to look for the config file in
-		viper.AddConfigPath("$HOME/.tools-setup-go")  // call multiple times to add many search paths
+		viper.SetConfigName("config")                // name of config file (without extension)
+		viper.SetConfigType("yml")                   // REQUIRED if the config file does not have the extension in the name
+		viper.AddConfigPath("/etc/appname/")         // path to look for the config file in
+		viper.AddConfigPath("$HOME/.tools-setup-go") // call multiple times to add many search paths
 		viper.AddConfigPath(".")
 	}
 

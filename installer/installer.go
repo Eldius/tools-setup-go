@@ -6,15 +6,17 @@ import (
 	"net/http"
 	"os"
 
-	"github.com/Eldius/tools-setup-go/config"
 	"github.com/Eldius/tools-setup-go/logger"
+	"github.com/Eldius/tools-setup-go/specs"
 )
 
 /*
 Install will install the spec passad as parameter
 */
 func Install(specName string) {
-	config.LoadSetupSpecsConfig()
+	for i, s := range specs.ListSpecs() {
+		fmt.Println(i, " => ", s.Name, ": ", s.Version)
+	}
 	//destFile := downloadFile(spec.URL, specName)
 	//extractedFiles, err := UnpackFile(destFile)
 	//if err != nil {

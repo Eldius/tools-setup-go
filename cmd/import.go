@@ -18,21 +18,18 @@ package cmd
 import (
 	"fmt"
 
+	"github.com/Eldius/tools-setup-go/specs"
 	"github.com/spf13/cobra"
 )
 
 // importCmd represents the import command
 var importCmd = &cobra.Command{
-	Use:   "import",
-	Short: "A brief description of your command",
-	Long: `A longer description that spans multiple lines and likely contains examples
-and usage of using your command. For example:
-
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
+	Use:   "import <specs-file> [<specs-file1> <specs-filen>]",
+	Short: "Import specs files",
+	Long:  `Import specs files.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		fmt.Println("import called")
+		fmt.Println(specs.ImportSpecs(args))
 	},
 }
 

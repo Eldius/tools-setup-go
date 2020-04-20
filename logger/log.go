@@ -6,22 +6,8 @@ import (
 	"log"
 	"os"
 
-	home "github.com/mitchellh/go-homedir"
-
 	"github.com/Eldius/tools-setup-go/config"
 )
-
-const (
-	logFolder = "~/.tools-setup/"
-)
-
-func init() {
-	if configDir, err := home.Expand(logFolder); err != nil {
-		panic(err.Error())
-	} else {
-		os.MkdirAll(configDir, os.ModePerm)
-	}
-}
 
 /*
 Debug used to log debug massage
@@ -29,10 +15,7 @@ Debug used to log debug massage
 func Debug(msg string) {
 	cfg := config.LoadSetupSpecsConfig()
 	if cfg.Verbose {
-		f, err := os.OpenFile(getLogFile(), os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
-		if err != nil {
-			panic(err.Error())
-		}
+		f := getLogFile()
 		defer f.Close()
 
 		log.SetOutput(f)
@@ -46,10 +29,7 @@ DebugInterface used to log debug info
 func DebugInterface(obj interface{}) {
 	cfg := config.LoadSetupSpecsConfig()
 	if cfg.Verbose {
-		f, err := os.OpenFile(getLogFile(), os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
-		if err != nil {
-			panic(err.Error())
-		}
+		f := getLogFile()
 		defer f.Close()
 
 		log.SetOutput(f)
@@ -66,21 +46,23 @@ func DebugInterface(obj interface{}) {
 Info log info
 */
 func Info(msg ...interface{}) {
-	logFile := getLogFile()
-	f, err := os.OpenFile(logFile, os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
-	if err == nil {
-		log.SetOutput(f)
-	}
+	f := getLogFile()
 	defer f.Close()
 
 	log.Println(msg...)
 	fmt.Println("i -> ", msg)
 }
 
-func getLogFile() string {
+func getLogFile() *os.File {
 	logFile := config.GetLogFile()
-	f, _ := os.Create(logFile)
-	f.Close()
+	f, openFileErr := os.OpenFile(logFile, os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
+	if openFileErr != nil {
+		f, createFileErr := os.Create(logFile)
+		if createFileErr != nil {
+			panic(createFileErr.Error())
+		}
+		return f
+	}
 
-	return logFile
+	return f
 }

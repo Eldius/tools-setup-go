@@ -1,4 +1,4 @@
 ---
-logfile: ~/.tools-setup-go/execution.log
-binfolder: ~/.tools-setup-go/bin
+logfile: ~/.tools-setup/execution.log
+binfolder: ~/.tools-setup/bin
 verbose: true

@@ -3,6 +3,7 @@ package config
 import (
 	"fmt"
 	"os"
+	"path/filepath"
 
 	home "github.com/mitchellh/go-homedir"
 	"github.com/spf13/viper"
@@ -14,18 +15,20 @@ AppConfig is the configuration struct
 type AppConfig struct {
 	Verbose   bool
 	BinFolder string
+	DbFolder  string
 }
 
 const (
-	logFolder = "~/.tools-setup/"
+	configDir = "~/.tools-setup"
 )
 
 func init() {
-	if configDir, err := home.Expand(logFolder); err != nil {
-		panic(err.Error())
-	} else {
-		os.MkdirAll(configDir, os.ModePerm)
-	}
+	configFolder := GetAppConfigFolder()
+	os.MkdirAll(configFolder, os.ModePerm)
+}
+
+func createBinFolder(binFolder string) {
+	os.MkdirAll(binFolder, os.ModePerm)
 }
 
 /*
@@ -44,19 +47,19 @@ LoadSetupSpecsConfig loads setup from file
 */
 func LoadSetupSpecsConfig() AppConfig {
 	fmt.Println("Using config file [2]:", viper.ConfigFileUsed())
-	logFile, err := home.Expand(fmt.Sprintf("%s/execution.log", logFolder))
-	if err != nil {
-		panic(err.Error())
-	}
+	logFile := filepath.Join(GetAppConfigFolder(), "execution.log")
 	viper.SetDefault("verbose", false)
 	viper.SetDefault("logfile", logFile)
+	viper.SetDefault("binfolder", filepath.Join(GetAppConfigFolder(), "bin"))
+	viper.SetDefault("dbfolder", filepath.Join(GetAppConfigFolder()))
 
 	var appConfig AppConfig
-	err = viper.Unmarshal(&appConfig)
+	err := viper.Unmarshal(&appConfig)
 	if err != nil {
 		panic(err.Error())
 	}
 	fmt.Println(fmt.Sprintf("config: %v", appConfig))
+	createBinFolder(appConfig.BinFolder)
 	return appConfig
 }
 
@@ -64,5 +67,25 @@ func LoadSetupSpecsConfig() AppConfig {
 GetLogFile returns the log file path
 */
 func GetLogFile() string {
-	return fmt.Sprintf("%s/execution.log", logFolder)
+	logFile := filepath.Join(GetAppConfigFolder(), "execution.log")
+	os.Create(logFile)
+	return logFile
+}
+
+/*
+GetDBFile returns the log file path
+*/
+func GetDBFile() string {
+	return filepath.Join(GetAppConfigFolder(), "specs.db")
+}
+
+/*
+GetAppConfigFolder returns the config folder
+*/
+func GetAppConfigFolder() string {
+	if dir, err := home.Expand(configDir); err != nil {
+		panic(err.Error())
+	} else {
+		return dir
+	}
 }
